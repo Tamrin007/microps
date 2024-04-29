@@ -1,0 +1,22 @@
+{
+    "name": "microps",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "devcontainer",
+
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspaces",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cpptools-themes",
+                "ms-vscode.makefile-tools",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    }
+
+    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+}
