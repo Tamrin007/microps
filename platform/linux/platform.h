@@ -1,13 +1,28 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <pthread.h>
+#include <signal.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 /*
  * Memory
  */
+
+/*
+ * Interrupt
+ */
+#define INTR_IRQ_BASE (SIGRTMIN + 1)
+
+#define INTR_IRQ_SHARED 0x0001
+
+extern int intr_request_irq(unsigned int irq, int (*handler)(unsigned int irq, void *id), int flags, const char *name, void *dev);
+extern int intr_raise_irq(unsigned int irq);
+
+extern int intr_run(void);
+extern void intr_shutdown(void);
+extern int intr_init(void);
 
 static inline void *
 memory_alloc(size_t size)
