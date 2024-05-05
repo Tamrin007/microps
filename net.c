@@ -38,7 +38,7 @@ struct net_device *net_device_alloc(void)
     return dev;
 }
 
-/* NOTE: must not be call after net_run() */
+/* NOTE: must not be called after net_run() */
 int net_device_register(struct net_device *dev)
 {
     static unsigned int index = 0;
@@ -114,7 +114,7 @@ int net_device_output(struct net_device *dev, uint16_t type, const uint8_t *data
     return 0;
 }
 
-/* NOTE: must not be call after net_run() */
+/* NOTE: must not be called after net_run() */
 int net_protocol_register(uint16_t type, void (*handler)(const uint8_t *data, size_t len, struct net_device *dev))
 {
     struct net_protocol *proto;
