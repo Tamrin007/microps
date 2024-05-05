@@ -25,14 +25,12 @@ extern int intr_run(void);
 extern void intr_shutdown(void);
 extern int intr_init(void);
 
-static inline void *
-memory_alloc(size_t size)
+static inline void *memory_alloc(size_t size)
 {
     return calloc(1, size);
 }
 
-static inline void
-memory_free(void *ptr)
+static inline void memory_free(void *ptr)
 {
     free(ptr);
 }
@@ -45,20 +43,17 @@ typedef pthread_mutex_t mutex_t;
 
 #define MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
 
-static inline int
-mutex_init(mutex_t *mutex)
+static inline int mutex_init(mutex_t *mutex)
 {
     return pthread_mutex_init(mutex, NULL);
 }
 
-static inline int
-mutex_lock(mutex_t *mutex)
+static inline int mutex_lock(mutex_t *mutex)
 {
     return pthread_mutex_lock(mutex);
 }
 
-static inline int
-mutex_unlock(mutex_t *mutex)
+static inline int mutex_unlock(mutex_t *mutex)
 {
     return pthread_mutex_unlock(mutex);
 }
