@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "icmp.h"
 #include "ip.h"
 #include "net.h"
 #include "platform.h"
@@ -279,6 +280,12 @@ int net_init(void)
 
     if (ip_init() == -1) {
         errorf("ip_init() failure");
+        return -1;
+    }
+
+    // Exercise 9-5: ICMPの初期化関数を呼び出す (プロトコルスタックの初期化時にICMPが登録されるようにする)
+    if (icmp_init() == -1) {
+        errorf("icmp_init() failure");
         return -1;
     }
 

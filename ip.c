@@ -25,11 +25,18 @@ struct ip_hdr {
     uint8_t options[];
 };
 
+struct ip_protocol {
+    struct ip_protocol *next;
+    uint8_t type;
+    void (*handler)(const uint8_t *data, size_t len, ip_addr_t src, ip_addr_t dst, struct ip_iface *iface);
+};
+
 const ip_addr_t IP_ADDR_ANY       = 0x00000000; /* 0.0.0.0 */
 const ip_addr_t IP_ADDR_BROADCAST = 0xFFFFFFFF; /* 255.255.255.255 */
 
 /* NOTE: if you want to add/delete the entries after net_run(), you need to protect these lists with a mutex.  */
 static struct ip_iface *ifaces;
+static struct ip_protocol *protocols;
 
 int ip_addr_pton(const char *p, ip_addr_t *n)
 {
@@ -175,6 +182,42 @@ struct ip_iface *ip_iface_select(ip_addr_t addr)
     return NULL;
 }
 
+/* NOTE: must not be called after net_run() */
+int ip_protocol_register(uint8_t type, void (*handler)(const uint8_t *data, size_t len, ip_addr_t src, ip_addr_t dst, struct ip_iface *iface))
+{
+    struct ip_protocol *entry;
+
+    // Exercise 9-1: 重複登録の確認
+    // ・プロトコルリスト (protocols) を巡回
+    //   ・指定されたtypeのエントリがすでに存在する場合はエラーを返す
+    for (entry = protocols; entry; entry = entry->next) {
+        if (entry->type == type) {
+            errorf("detect duplicated protocol type: %u", type);
+            return -1;
+        }
+    }
+
+    // Exercise 9-2: プロトコルの登録
+    // (1) 新しいプロトコルのエントリ用にメモリを確保
+    //     ・確保に失敗したらエラーを返す
+    if (!(entry = memory_alloc(sizeof(*entry)))) {
+        errorf("memory_alloc() failure");
+        return -1;
+    }
+
+    // (2) 新しいプロトコルのエントリに値を設定
+    entry->type    = type;
+    entry->handler = handler;
+    entry->next    = protocols;
+
+    // (3) プロトコルリスト (protocols) の先頭に挿入
+    protocols = entry;
+
+    infof("registered, type=%u", entry->type);
+
+    return 0;
+}
+
 static void ip_input(const uint8_t *data, size_t len, struct net_device *dev)
 {
     struct ip_hdr *hdr;
@@ -247,6 +290,20 @@ static void ip_input(const uint8_t *data, size_t len, struct net_device *dev)
 
     debugf("dev=%s, iface=%s, protocol=%u, total=%u", dev->name, ip_addr_ntop(iface->unicast, addr, sizeof(addr)), hdr->protocol, total);
     ip_dump(data, total);
+
+    // Exercise 9-3: プロトコルの検索
+    // ・プロトコルリスト (protocols) を巡回
+    //   ・IPヘッダのプロトコル番号と一致するプロトコルの入力関数を呼び出す (入力関数にはIPデータグラムのペイロードを渡す)
+    //   ・入力関数から戻ったらreturnする
+    // ・合致するプロトコルが見つからない場合は何もしない
+    for (struct ip_protocol *entry = protocols; entry; entry = entry->next) {
+        if (entry->type == hdr->protocol) {
+            entry->handler(data, total - hlen, hdr->src, hdr->dst, iface);
+            return;
+        }
+    }
+
+    /* unsupported protocols */
 }
 
 static int ip_output_device(struct ip_iface *iface, const uint8_t *data, size_t len, ip_addr_t dst)
