@@ -85,7 +85,7 @@ static void ip_dump(const uint8_t *data, size_t len)
     v    = (hdr->vhl & 0xF0) >> 4;
     hl   = hdr->vhl & 0x0F;
     hlen = hl << 2;
-    fprintf(stderr, "        vhl: 0x%02x [v: %u, hl: %u (%u)\n]", hdr->vhl, v, hl, hlen);
+    fprintf(stderr, "        vhl: 0x%02x [v: %u, hl: %u (%u)]\n", hdr->vhl, v, hl, hlen);
     fprintf(stderr, "        tos: 0x%02x\n", hdr->tos);
     total = ntoh16(hdr->total);
     fprintf(stderr, "      total: %u (payload: %u)\n", total, total - hlen);
@@ -310,7 +310,7 @@ static int ip_output_device(struct ip_iface *iface, const uint8_t *data, size_t 
 {
     uint8_t hwaddr[NET_DEVICE_ADDR_LEN] = {};
 
-    if (NET_IFACE(iface)->dev->flags & NET_DEVICE_FLAG_NEEDARP) {
+    if (NET_IFACE(iface)->dev->flags & NET_DEVICE_FLAG_NEED_ARP) {
         if (dst == iface->broadcast || dst == IP_ADDR_BROADCAST) {
             memcpy(hwaddr, NET_IFACE(iface)->dev->broadcast, NET_IFACE(iface)->dev->alen);
         } else {
