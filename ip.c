@@ -298,7 +298,7 @@ static void ip_input(const uint8_t *data, size_t len, struct net_device *dev)
     // ・合致するプロトコルが見つからない場合は何もしない
     for (struct ip_protocol *entry = protocols; entry; entry = entry->next) {
         if (entry->type == hdr->protocol) {
-            entry->handler(data, total - hlen, hdr->src, hdr->dst, iface);
+            entry->handler(data + hlen, total - hlen, hdr->src, hdr->dst, iface);
             return;
         }
     }
