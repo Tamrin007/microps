@@ -355,7 +355,7 @@ static ssize_t ip_output_core(struct ip_iface *iface, uint8_t protocol, const ui
     hdr->sum = cksum16((uint16_t *)hdr, hlen, 0);
 
     // (2) IPヘッダの直後にデータを配置 (コピー) する
-    memcpy(buf + IP_HDR_SIZE_MIN, data, len);
+    memcpy(hdr + 1, data, len);
 
     debugf("dev=%s, dst=%s, protocol=%u, len=%u", NET_IFACE(iface)->dev->name, ip_addr_ntop(dst, addr, sizeof(addr)), protocol, total);
     ip_dump(buf, total);
