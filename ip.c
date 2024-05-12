@@ -341,8 +341,8 @@ static ssize_t ip_output_core(struct ip_iface *iface, uint8_t protocol, const ui
     //       ・チェックサムの計算の際、あらかじめチェックサムフィールドに0を設定するのを忘れずに
     hdr->vhl      = (IP_VERSION_IPV4 << 4) | (IP_HDR_SIZE_MIN / 4);
     hdr->tos      = 0;
-    total         = hton16(IP_HDR_SIZE_MIN + len);
-    hdr->total    = total;
+    total         = IP_HDR_SIZE_MIN + len;
+    hdr->total    = hton16(total);
     hdr->id       = hton16(id);
     hdr->offset   = hton16(offset);
     hdr->ttl      = 255;
