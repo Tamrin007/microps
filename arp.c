@@ -163,6 +163,8 @@ static struct arp_cache *arp_cache_update(ip_addr_t pa, const uint8_t *ha)
     //   ・stateは解決済み(RESOLVED)の状態にする
     //   ・timestampはgettimeofday()で設定する ※使い方がわからなかったら調べること
     cache->state = ARP_CACHE_STATE_RESOLVED;
+    cache->pa    = pa;
+    memcpy(cache->ha, ha, ETHER_ADDR_LEN);
     gettimeofday(&cache->timestamp, NULL);
 
     debugf("UPDATE: pa=%s, ha=%s", ip_addr_ntop(cache->pa, addr1, sizeof(addr1)), ether_addr_ntop(cache->ha, addr2, sizeof(addr2)));
