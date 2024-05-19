@@ -154,7 +154,6 @@ static struct arp_cache *arp_cache_update(ip_addr_t pa, const uint8_t *ha)
     //   ・見つからなかったらエラー(NULL)を返す
     cache = arp_cache_select(pa);
     if (!cache) {
-        mutex_unlock(&mutex);
         debugf("cache not found: pa=%s", ip_addr_ntop(pa, addr1, sizeof(addr1)));
         return NULL;
     }
