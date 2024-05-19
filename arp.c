@@ -107,7 +107,7 @@ static void arp_cache_delete(struct arp_cache *cache)
     // ・timestampはtimerclear()でクリアする
     cache->state = ARP_CACHE_STATE_FREE;
     cache->pa    = 0;
-    memset(&cache->ha, 0, sizeof(cache->ha));
+    memset(cache->ha, 0, ETHER_ADDR_LEN);
     timerclear(&cache->timestamp);
 }
 
